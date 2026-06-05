@@ -1,0 +1,2 @@
+# rag-chatbot
+streamlit langchain langchain-community langchain-classic langchain-groq langchain-text-splitters sentence-transformers chromadb pymupdf reportlab langdetect pypdf
