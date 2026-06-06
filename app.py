@@ -1,3 +1,4 @@
+
 import os
 import streamlit as st
 from langchain_community.document_loaders import PyMuPDFLoader
@@ -11,7 +12,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import tempfile, urllib.parse
 
-st.set_page_config(page_title="RAG Chatbot", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Multilingual Agentic RAG Chatbot", page_icon="🤖", layout="wide")
 
 st.markdown("""
 <style>
@@ -23,7 +24,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
+GROQ_KEY = os.environ.get("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", "")
 
 with st.sidebar:
     st.image("https://img.icons8.com/fluency/96/bot.png", width=70)
@@ -40,7 +41,7 @@ with st.sidebar:
         st.session_state.qa = None
         st.rerun()
 
-st.title("🤖 Multilingual RAG Chatbot")
+st.title("🤖 Multilingual Agentic RAG Chatbot")
 st.markdown("---")
 
 lang_prompts = {
@@ -77,7 +78,6 @@ if uploaded_file and (st.session_state.last_file != uploaded_file.name):
         st.session_state.messages = []
         st.success("✅ Ready!")
 
-# ---- AGENTIC RESEARCH PAPER ----
 st.markdown("### 🧠 Agentic AI — Research Paper Generator")
 research_topic = st.text_input("Topic likho (e.g. AI in Islamic Finance)")
 if st.button("📝 Research Paper Generate Karo"):
@@ -85,12 +85,12 @@ if st.button("📝 Research Paper Generate Karo"):
         with st.spinner("Agent kaam kar raha hai..."):
             steps = [
                 f"What is {research_topic}? Give a detailed introduction.",
-                f"What are the key concepts and principles of {research_topic}?",
-                f"What are the current applications and use cases of {research_topic}?",
-                f"What are the challenges and future directions of {research_topic}?",
+                f"What are the key concepts of {research_topic}?",
+                f"What are the applications of {research_topic}?",
+                f"What are the challenges of {research_topic}?",
                 f"Write a conclusion for a research paper on {research_topic}."
             ]
-            sections = ["Introduction", "Key Concepts", "Applications", "Challenges & Future", "Conclusion"]
+            sections = ["Introduction", "Key Concepts", "Applications", "Challenges", "Conclusion"]
             paper_content = {}
             progress = st.progress(0)
             for i, (step, section) in enumerate(zip(steps, sections)):
@@ -99,9 +99,7 @@ if st.button("📝 Research Paper Generate Karo"):
                 paper_content[section] = result["answer"]
                 progress.progress((i+1)*20)
 
-            # PDF banao
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_pdf:
-                pdf_path = tmp_pdf.name
+            pdf_path = tempfile.mktemp(suffix=".pdf")
             c = canvas.Canvas(pdf_path, pagesize=letter)
             w, h = letter
             c.setFont("Helvetica-Bold", 18)
@@ -127,11 +125,7 @@ if st.button("📝 Research Paper Generate Karo"):
                 if line:
                     c.drawString(60, y, line)
                     y -= 25
-                if y < 80:
-                    c.showPage()
-                    y = h - 60
             c.save()
-
             with open(pdf_path, "rb") as f:
                 st.download_button("📥 PDF Download Karo", f,
                                    file_name="research_paper.pdf",
@@ -141,9 +135,8 @@ if st.button("📝 Research Paper Generate Karo"):
         st.warning("Pehle PDF upload karo aur topic likho")
 
 st.markdown("---")
-
-# ---- CHAT ----
 st.markdown("### 💬 Chat")
+
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
@@ -163,35 +156,22 @@ else:
             st.write(answer)
         st.session_state.messages.append({"role": "assistant", "content": answer})
 
-# ---- SHARING ----
 if st.session_state.messages:
     st.markdown("---")
     st.markdown("### 📤 Chat Share Karo")
-
     full_chat = ""
     for msg in st.session_state.messages:
         role = "You" if msg["role"] == "user" else "Bot"
         full_chat += f"{role}: {msg['content']}\n\n"
-
-    # Clipboard
     st.text_area("📋 Chat History", full_chat, height=150)
-
-    # WhatsApp
     wa_text = urllib.parse.quote(full_chat[:500])
     wa_link = f"https://wa.me/?text={wa_text}"
-
-    # LinkedIn
-    li_text = urllib.parse.quote(full_chat[:500])
-    li_link = f"https://www.linkedin.com/sharing/share-offsite/?url=https://chatbot.app&summary={li_text}"
-
-    st.markdown(f"""
-    <a href="{wa_link}" target="_blank" class="share-btn wa">📱 WhatsApp Share</a>
-    <a href="{li_link}" target="_blank" class="share-btn li">💼 LinkedIn Share</a>
-    """, unsafe_allow_html=True)
-
-    # Email
+    li_link = f"https://www.linkedin.com/sharing/share-offsite/?url=https://chatbot.app"
     email_subject = urllib.parse.quote("My RAG Chatbot Conversation")
     email_body = urllib.parse.quote(full_chat[:1000])
     email_link = f"mailto:?subject={email_subject}&body={email_body}"
-    st.markdown(f'<a href="{email_link}" class="share-btn" style="background:#EA4335">📧 Email Share</a>',
-                unsafe_allow_html=True)
+    st.markdown(f'''
+    <a href="{wa_link}" target="_blank" class="share-btn wa">📱 WhatsApp</a>
+    <a href="{li_link}" target="_blank" class="share-btn li">💼 LinkedIn</a>
+    <a href="{email_link}" class="share-btn" style="background:#EA4335">📧 Email</a>
+    ''', unsafe_allow_html=True)
