@@ -86,13 +86,13 @@ with tab1:
         with st.chat_message("user"):
             st.write(prompt)
         with st.chat_message("assistant"):
-            with st.spinner("Soch raha hun..."):
+            with st.spinner("Thinking..."):
                 if st.session_state.qa:
                     full_q = f"{lang_prompts[language]} {prompt}"
                     result = st.session_state.qa({"question": full_q})
                     answer = result["answer"]
                 else:
-                    answer = "⚠️ Pehle sidebar se PDF upload karo!"
+                    answer = "⚠️ first upload pdf!"
             st.write(answer)
         st.session_state.messages.append({"role": "assistant", "content": answer})
 
@@ -119,7 +119,7 @@ with tab1:
 # ---- TAB 2 - RESEARCH ----
 with tab2:
     st.markdown("### 🧠 Agentic Research Paper Generator")
-    st.info("PDF ki zaroorat nahi — koi bhi topic likho!")
+    st.info("No need to pdf_write any topic!")
 
     for msg in st.session_state.research_messages:
         with st.chat_message(msg["role"]):
@@ -127,9 +127,9 @@ with tab2:
 
     research_topic = st.text_input("Topic likho (e.g. AI in Islamic Finance)")
 
-    if st.button("📝 Research Paper Generate Karo"):
+    if st.button("📝 Generate the research paper"):
         if research_topic:
-            with st.spinner("Agent kaam kar raha hai..."):
+            with st.spinner("Agent is working..."):
                 history_context = ""
                 for msg in st.session_state.research_memory:
                     history_context += f"{msg['role']}: {msg['content']}\n"
@@ -187,7 +187,7 @@ with tab2:
                 with open(pdf_path, "rb") as f:
                     pdf_bytes = f.read()
 
-                st.download_button("📥 PDF Download Karo", pdf_bytes,
+                st.download_button("📥 Download the pdf", pdf_bytes,
                                    file_name="research_paper.pdf",
                                    mime="application/pdf")
 
@@ -206,4 +206,4 @@ with tab2:
                 ''', unsafe_allow_html=True)
                 st.success("✅ Research Paper ready!")
         else:
-            st.warning("Topic likho pehle!")
+            st.warning("First write about topic!")
