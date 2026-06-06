@@ -13,7 +13,7 @@ import tempfile, urllib.parse
 
 st.set_page_config(page_title="Multilingual Agentic RAG Chatbot", page_icon="🤖", layout="wide")
 
-GROQ_KEY = os.environ.get("GROQ_KEY", "")
+GROQ_KEY = "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"
 llm = ChatGroq(api_key=GROQ_KEY, model_name="llama-3.3-70b-versatile")
 
 lang_prompts = {
